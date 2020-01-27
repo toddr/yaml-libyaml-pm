@@ -1,0 +1,42 @@
+name: linux
+
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+
+jobs:
+  perl:
+    env:
+      PERL_USE_UNSAFE_INC: 1
+      AUTHOR_TESTING: 1
+      AUTOMATED_TESTING: 1
+      RELEASE_TESTING: 1
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        perl-version: ["5.30", 5.28, 5.26, 5.24, 5.22, "5.20", 5.18, 5.16]
+
+    container:
+      image: perldocker/perl-tester:${{ matrix.perl-version }}
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: perl -V
+        run: perl -V
+      - name: test-base-pm bootstrap
+        run: git clone https://github.com/ingydotnet/test-base-pm
+      - name: Install deps
+        run: cpm install -g --no-test --show-build-log-on-failure YAML::XS || /bin/true
+      - name: Install deps
+        run: cpm install -g --no-test --show-build-log-on-failure Test::Base Zilla::Dist Dist::Zilla || /bin/true
+      - name: cpanm Install deps
+        run: cpanm  --notest -v  Test::Base Zilla::Dist Dist::Zilla
+      - name: make test
+        run: zild disttest

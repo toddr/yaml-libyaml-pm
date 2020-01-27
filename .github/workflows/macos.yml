@@ -1,0 +1,35 @@
+name: macos
+
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+
+jobs:
+  perl:
+    env:
+      PERL_USE_UNSAFE_INC: 1
+      AUTHOR_TESTING: 1
+      AUTOMATED_TESTING: 1
+      RELEASE_TESTING: 1
+
+    runs-on: macOS-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        perl-version: [latest]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: perl -V
+        run: perl -V
+      - name: test-base-pm bootstrap
+        run: git clone https://github.com/ingydotnet/test-base-pm
+      - name: Install deps
+        run: curl -sL https://git.io/cpm | perl - install -g --no-test --show-build-log-on-failure Test::Base Zilla::Dist Dist::Zilla
+      - name: make test
+        run: zild disttest

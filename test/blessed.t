@@ -1,6 +1,7 @@
 use FindBin '$Bin';
 use lib $Bin;
 use TestYAMLTests tests => 10;
+$YAML::XS::LoadBlessed = 1;
 
 filters {
     perl => 'eval',

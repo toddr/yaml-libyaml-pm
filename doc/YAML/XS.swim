@@ -29,7 +29,9 @@ functions. Only `Load` and `Dump` are exported by default.
 
 - `$YAML::XS::LoadBlessed` (since v0.69)
 
-  Default: true. The default might be changed to false in the future.
+  Default: false.
+
+  The default was changed in version 0.81.
 
   When set to false, it will not bless data into objects, which can be
   a security problem, when loading YAML from an untrusted source.
